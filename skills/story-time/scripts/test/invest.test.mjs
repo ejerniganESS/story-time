@@ -106,3 +106,17 @@ test('a generic persona ("a user", "someone") is a Valuable warning', () => {
   }
   assert.ok(!lintStory(story()).findings.some((x) => x.rule === 'statement.persona'));
 });
+
+test('a chore with one acceptance criterion needs no estimate', () => {
+  const chore = story({ type: 'chore', size: undefined, sections: { ...story().sections, 'Acceptance Criteria': '- [ ] Given the config, when the job runs, then it reads the new path' } });
+  assert.ok(!ids(lintStory(chore)).includes('size.estimated'));
+});
+
+test('a chore with more than one acceptance criterion still needs an estimate', () => {
+  const chore = story({
+    type: 'chore',
+    size: undefined,
+    sections: { ...story().sections, 'Acceptance Criteria': '- [ ] Given A, when B, then C\n- [ ] Given D, when E, then F' },
+  });
+  assert.ok(ids(lintStory(chore)).includes('size.estimated'));
+});

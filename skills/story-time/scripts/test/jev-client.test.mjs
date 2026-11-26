@@ -203,3 +203,9 @@ test('a canary that could not run (outage) does not latch; it retries next time'
   down = false;
   assert.equal((await c.decide({ state: STATE, questions: QUESTIONS })).ok, true);
 });
+
+test('scanPayload refuses dashed SSNs and TypeSafe keys, and leaves plain ids alone', () => {
+  const findings = scanPayload({ state: { statement: 'SSN 123-45-6789', criteria: ['key tsk_live_AbCdEf0123456789xyz'] } });
+  assert.deepEqual(findings.map((f) => f.kind).sort(), ['secret', 'ssn']);
+  assert.deepEqual(scanPayload({ state: { statement: 'employee 123456789 on client 1042' } }), []);
+});

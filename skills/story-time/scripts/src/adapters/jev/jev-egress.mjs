@@ -19,8 +19,9 @@ export function assertVendorEndpoint(endpoint) {
 
 const SHAPES = [
   ['email', /[\w.+-]+@[\w-]+\.[\w.-]+/],
+  ['ssn', /\b\d{3}[-\s]\d{2}[-\s]\d{4}\b/],
   ['phone', /(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/],
-  ['secret', /\bgh[pousr]_[A-Za-z0-9]{20,}|\bgithub_pat_[A-Za-z0-9_]{20,}|\bAKIA[0-9A-Z]{16}\b|\bsk-[A-Za-z0-9_-]{20,}|\bxox[abprs]-[A-Za-z0-9-]{10,}|-----BEGIN [A-Z ]*PRIVATE KEY-----/],
+  ['secret', /\bgh[pousr]_[A-Za-z0-9]{20,}|\bgithub_pat_[A-Za-z0-9_]{20,}|\bAKIA[0-9A-Z]{16}\b|\bsk-[A-Za-z0-9_-]{20,}|\bxox[abprs]-[A-Za-z0-9-]{10,}|\btsk_(?:live|test)_[A-Za-z0-9_-]{8,}|\bessk_[A-Za-z0-9_-]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----/],
 ];
 
 export function scanPayload(value, path = '') {
