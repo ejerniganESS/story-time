@@ -3,6 +3,9 @@ import { execFile } from 'node:child_process';
 import { join } from 'node:path';
 import { SECRET_LABELS, formatEnvFile, parseEnvFile, secretSpec } from '../config/secrets.mjs';
 
+// The temporary file ends in .env too, so the *.env ignore rule covers it if a rename never happens.
+export const tempPathFor = (target, pid) => `${target}.${pid}.tmp.env`;
+
 const GITIGNORE = '# story-time: tracker tokens stay on this machine.\n*.env\n';
 
 // Stores one token per tracker in <dir>/.<tracker>.env with mode 0600, and
@@ -26,7 +29,7 @@ export class FileSecretStore {
     await mkdir(this.dir, { recursive: true });
     await ensureGitignore(this.dir);
     const target = this.path(tracker);
-    const tmp = `${target}.${process.pid}.tmp`;
+    const tmp = tempPathFor(target, process.pid);
     await writeFile(tmp, formatEnvFile(variable, value), { mode: 0o600 });
     await rename(tmp, target);
   }

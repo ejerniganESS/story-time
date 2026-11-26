@@ -4,7 +4,7 @@ import { mkdtemp, readFile, stat, chmod, writeFile, mkdir } from 'node:fs/promis
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parseEnvFile, mask, SECRET_SPECS, tokenEnv } from '../src/config/secrets.mjs';
-import { FileSecretStore } from '../src/adapters/file-secret-store.mjs';
+import { FileSecretStore, tempPathFor } from '../src/adapters/file-secret-store.mjs';
 
 const tmp = () => mkdtemp(join(tmpdir(), 'story-secret-'));
 const notTracked = async () => false;
@@ -72,4 +72,10 @@ test('rejects unknown trackers and empty tokens', async () => {
   const store = new FileSecretStore(await tmp(), { isTracked: notTracked });
   await assert.rejects(store.save('jira', 'x'), /no token support for "jira"/);
   await assert.rejects(store.save('github', '  '), /empty/);
+});
+
+test('the temporary token file is covered by the *.env ignore rule', () => {
+  const tmpPath = tempPathFor('/x/.github.env', 4242);
+  assert.match(tmpPath, /\.env$/);
+  assert.notEqual(tmpPath, '/x/.github.env');
 });
